@@ -1,0 +1,74 @@
+/*To build an AI chatbot using Natural Language Processing (NLP) libraries like NLTK or spaCy, you can follow these steps. The chatbot will use basic NLP techniques to understand and respond to user queries*/
+import spacy
+import random
+
+# Load the small English NLP model using spaCy
+nlp = spacy.load("en_core_web_sm")
+
+# Class to handle the chatbot's behavior
+class Chatbot:
+    def _init_(self):
+        # Initialize a dictionary of responses mapped to intents
+        self.responses = {
+            "greeting": ["Hello! How can I assist you today?", "Hi there! What's on your mind?", "Greetings! How can I help you?"],
+            "farewell": ["Goodbye! Have a great day!", "See you later! Take care!", "Farewell! It was nice talking to you."],
+            "thanks": ["You're welcome! Happy to help.", "No problem, glad I could assist.", "Anytime!"],
+            "name": ["I'm your friendly chatbot.", "You can call me Chatbot.", "I don't have a name, but I'm here to help!"]
+        }
+
+    # Method to detect the user's intent based on the message text
+    def detect_intent(self, text):
+        """
+        Detects intent based on the message. Returns a string that
+        identifies the user's intent by analyzing the message with spaCy NLP.
+        """
+        doc = nlp(text.lower())  # Process the input using spaCy
+        for token in doc:
+            if token.lemma_ in ['hello', 'hi', 'hey']:
+                return "greeting"
+            elif token.lemma_ in ['bye', 'goodbye', 'farewell']:
+                return "farewell"
+            elif token.lemma_ == 'thank':
+                return "thanks"
+            elif token.lemma_ == 'name':
+                return "name"
+        return "unknown"
+
+    # Method to generate an appropriate response based on the detected intent
+    def generate_response(self, text):
+        """
+        Takes the user's input (text) and returns a response
+        based on detected intent.
+        """
+        intent = self.detect_intent(text)
+        if intent in self.responses:
+            return random.choice(self.responses[intent])
+        else:
+            return "Sorry, I didn't quite understand that. Could you please clarify?"
+
+    # Main loop to engage in conversation
+    def chat(self):
+        """
+        Chat loop where the chatbot continuously asks for input and responds
+        until the user says 'bye', 'exit', or 'quit'.
+        """
+        print("Chatbot: Hello! How can I help you today?")
+        while True:
+            user_input = input("You: ")
+            if user_input.lower() in ['exit', 'quit', 'bye']:
+                print("Chatbot: Goodbye!")
+                break
+            response = self.generate_response(user_input)
+            print(f"Chatbot: {response}")
+
+# Function to run the chatbot
+def run_chatbot():
+    """
+    Function that initializes and starts the chatbot. This is the entry point
+    for interacting with the chatbot.
+    """
+    bot = Chatbot()  # Initialize chatbot instance
+    bot.chat()  # Start chat loop
+
+if _name_ == "_main_":
+    run_chatbot()
